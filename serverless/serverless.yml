@@ -1,0 +1,45 @@
+service: ats-integration-serverless
+
+frameworkVersion: "4"
+
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: python3.11
+  region: ap-south-1
+  environment:
+    ATS_PROVIDER: workable
+    ATS_BASE_URL: https://api.workable.com/spi/v3
+    ATS_API_KEY: ${env:ATS_API_KEY, 'dummy'}
+    WORKABLE_COMPANY: ${env:WORKABLE_COMPANY, 'dummy'}
+
+functions:
+  getJobs:
+    handler: handlers/get_jobs.handler
+    events:
+      - http:
+          path: jobs
+          method: get
+
+  createCandidate:
+    handler: handlers/create_candidate.handler
+    events:
+      - http:
+          path: candidates
+          method: post
+
+  createApplication:
+    handler: handlers/create_application.handler
+    events:
+      - http:
+          path: applications
+          method: post
+
+  getApplications:
+    handler: handlers/get_applications.handler
+    events:
+      - http:
+          path: applications
+          method: get

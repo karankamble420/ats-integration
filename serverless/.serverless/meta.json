@@ -1,0 +1,84 @@
+{
+  "C:\\Users\\Admin\\Desktop\\ats-integration\\serverless\\serverless.yml": {
+    "versionFramework": "4.31.2",
+    "servicePath": "C:\\Users\\Admin\\Desktop\\ats-integration\\serverless\\serverless.yml",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "service": "ats-integration",
+      "provider": {
+        "name": "aws",
+        "runtime": "python3.11",
+        "region": "ap-south-1",
+        "environment": {
+          "ATS_PROVIDER": "workable",
+          "ATS_BASE_URL": "https://api.workable.com/spi/v3",
+          "ATS_API_KEY": "<REDACTED>",
+          "WORKABLE_COMPANY": "${env:WORKABLE_COMPANY}"
+        }
+      },
+      "functions": {
+        "getJobs": {
+          "handler": "handlers/get_jobs.handler",
+          "events": [
+            {
+              "http": {
+                "path": "jobs",
+                "method": "get"
+              }
+            }
+          ]
+        },
+        "createCandidate": {
+          "handler": "handlers/create_candidate.handler",
+          "events": [
+            {
+              "http": {
+                "path": "candidates",
+                "method": "post"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "python3.11",
+      "region": "ap-south-1",
+      "environment": {
+        "ATS_PROVIDER": "workable",
+        "ATS_BASE_URL": "https://api.workable.com/spi/v3",
+        "ATS_API_KEY": "<REDACTED>",
+        "WORKABLE_COMPANY": "${env:WORKABLE_COMPANY}"
+      }
+    },
+    "dashboard": {
+      "isEnabledForService": false,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": null,
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": null,
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "error": {
+      "message": "Cannot resolve '${env:ATS_API_KEY}' variable at 'provider.environment.ATS_API_KEY'. No value is available for this variable, and no default value was provided. Please check your variable definitions or provide a default value.",
+      "stack": "Error: Cannot resolve '${env:ATS_API_KEY}' variable at 'provider.environment.ATS_API_KEY'. No value is available for this variable, and no default value was provided. Please check your variable definitions or provide a default value.\n    at _ResolverManager.resolve (file:///C:/Users/Admin/.serverless/releases/4.31.2/package/dist/sf-core.js:925:32358)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async #handlePlaceholderNode (file:///C:/Users/Admin/.serverless/releases/4.31.2/package/dist/sf-core.js:925:30536)\n    at async file:///C:/Users/Admin/.serverless/releases/4.31.2/package/dist/sf-core.js:925:28380\n    at async processNodeAndHandleCompletion (file:///C:/Users/Admin/.serverless/releases/4.31.2/package/dist/sf-core.js:925:16765)",
+      "code": "MISSING_VARIABLE_RESULT"
+    },
+    "serviceRawFile": "service: ats-integration\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: python3.11\r\n  region: ap-south-1\r\n  environment:\r\n    ATS_PROVIDER: workable\r\n    ATS_BASE_URL: https://api.workable.com/spi/v3\r\n    ATS_API_KEY: ${env:ATS_API_KEY}\r\n    WORKABLE_COMPANY: ${env:WORKABLE_COMPANY}\r\n\r\nfunctions:\r\n  getJobs:\r\n    handler: handlers/get_jobs.handler\r\n    events:\r\n      - http:\r\n          path: jobs\r\n          method: get\r\n\r\n  createCandidate:\r\n    handler: handlers/create_candidate.handler\r\n    events:\r\n      - http:\r\n          path: candidates\r\n          method: post\r\n",
+    "command": [
+      "offline"
+    ],
+    "options": {},
+    "orgId": "dfa46afc-f979-40d8-bec5-daf5b4769070",
+    "orgName": "hmskk",
+    "userId": "HXF7H1Mxw7rN5yyzk0",
+    "userName": "hmskk",
+    "serviceProviderAwsCfStackId": null,
+    "serviceProviderAwsCfStackCreated": null,
+    "serviceProviderAwsCfStackUpdated": null,
+    "serviceProviderAwsCfStackStatus": null,
+    "serviceProviderAwsCfStackOutputs": null
+  }
+}
