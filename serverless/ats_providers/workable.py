@@ -14,88 +14,54 @@ class WorkableATS:
             "Accept": "application/json",
         }
 
-    # =========================
-    # GET JOBS
-    # =========================
     def get_jobs(self):
-        # ✅ MOCK MODE (serverless / demo)
-        if not self.api_key or not self.company or self.api_key == "dummy_key":
+        # 🔹 PREVIEW MODE (no real credentials yet)
+        if not self.api_key or not self.company or "pending" in self.company:
             return {
                 "success": True,
                 "provider": "workable",
-                "mode": "mock",
+                "mode": "preview",
                 "data": [
                     {
                         "id": "job_001",
                         "title": "Backend Developer",
                         "location": "Remote",
-                        "department": "Engineering"
+                        "department": "Engineering",
                     },
                     {
                         "id": "job_002",
                         "title": "Frontend Developer",
                         "location": "Bangalore",
-                        "department": "Engineering"
-                    }
-                ]
+                        "department": "Engineering",
+                    },
+                ],
             }
 
-        # ✅ REAL MODE (SPI credentials available)
+        # 🔹 LIVE MODE
         url = f"{self.base_url}/accounts/{self.company}/jobs"
-        response = requests.get(url, headers=self._headers(), timeout=10)
+        response = requests.get(url, headers=self._headers(), timeout=5)
 
         if response.status_code == 401:
             return {
                 "success": False,
                 "provider": "workable",
+                "mode": "live",
                 "error": "Unauthorized",
-                "message": "SPI access not enabled or API key invalid"
+                "message": "SPI access not enabled or invalid API key",
             }
 
-        response.raise_for_status()
+        if response.status_code != 200:
+            return {
+                "success": False,
+                "provider": "workable",
+                "mode": "live",
+                "error": "Upstream error",
+                "status_code": response.status_code,
+            }
 
         return {
             "success": True,
             "provider": "workable",
             "mode": "live",
-            "data": response.json()
+            "data": response.json(),
         }
-
-    # =========================
-    # CREATE CANDIDATE
-    # =========================
-    def create_candidate(self, data):
-        # ✅ MOCK MODE
-        if not self.api_key or not self.company or self.api_key == "dummy_key":
-            return {
-                "success": True,
-                "provider": "workable",
-                "mode": "mock",
-                "candidate": {
-                    "id": "cand_001",
-                    "job_id": data.get("job_id"),
-                    "name": data.get("name"),
-                    "email": data.get("email"),
-                    "status": "created"
-                }
-            }
-
-        # ✅ REAL MODE
-        url = f"{self.base_url}/accounts/{self.company}/candidates"
-        response = requests.post(
-            url,
-            json=data,
-            headers=self._headers(),
-            timeout=10
-        )
-
-        if response.status_code == 401:
-            return {
-                "success": False,
-                "provider": "workable",
-                "error": "Unauthorized",
-                "message": "SPI access required"
-            }
-
-        response.raise_for_status()
-        return response.json()

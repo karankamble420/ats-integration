@@ -1,28 +1,23 @@
 import json
-from utils.response import success, error
+from utils.response import response
 
-# Mock DB (in-memory for demo)
-APPLICATIONS = []
 
 def handler(event, context):
-    try:
-        body = json.loads(event["body"])
+    data = json.loads(event.get("body", "{}"))
 
-        required = ["job_id", "candidate_id"]
-        for field in required:
-            if field not in body:
-                return error(f"Missing field: {field}")
+    if "candidate_id" not in data or "job_id" not in data:
+        return response(400, {
+            "success": False,
+            "error": "candidate_id and job_id required"
+        })
 
-        application = {
-            "application_id": f"app_{len(APPLICATIONS) + 1}",
-            "job_id": body["job_id"],
-            "candidate_id": body["candidate_id"],
+    return response(200, {
+        "success": True,
+        "mode": "preview",
+        "application": {
+            "application_id": "app_001",
+            "candidate_id": data["candidate_id"],
+            "job_id": data["job_id"],
             "status": "applied"
         }
-
-        APPLICATIONS.append(application)
-
-        return success(application)
-
-    except Exception as e:
-        return error(str(e), 500)
+    })

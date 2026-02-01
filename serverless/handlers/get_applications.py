@@ -1,35 +1,27 @@
-from utils.response import success
+from utils.response import response
 
-# Same mock store
-APPLICATIONS = [
-    {
-        "application_id": "app_1",
-        "job_id": "job_063",
-        "candidate_id": "cand_001",
-        "status": "applied"
-    }
-]
 
 def handler(event, context):
-    query = event.get("queryStringParameters") or {}
+    params = event.get("queryStringParameters") or {}
+    page = int(params.get("page", 1))
+    limit = int(params.get("limit", 10))
 
-    job_id = query.get("job_id")
-    page = int(query.get("page", 1))
-    limit = int(query.get("limit", 10))
-
-    results = APPLICATIONS
-
-    if job_id:
-        results = [a for a in results if a["job_id"] == job_id]
+    applications = [
+        {
+            "application_id": "app_001",
+            "candidate_id": "cand_001",
+            "job_id": "job_001",
+            "status": "applied"
+        }
+    ]
 
     start = (page - 1) * limit
     end = start + limit
 
-    return success(
-        data=results[start:end],
-        meta={
-            "page": page,
-            "limit": limit,
-            "total": len(results)
-        }
-    )
+    return response(200, {
+        "success": True,
+        "mode": "preview",
+        "page": page,
+        "limit": limit,
+        "data": applications[start:end]
+    })

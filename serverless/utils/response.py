@@ -1,20 +1,11 @@
 import json
 
-def success(data=None, meta=None):
-    return {
-        "statusCode": 200,
-        "body": json.dumps({
-            "success": True,
-            "data": data,
-            "meta": meta
-        })
-    }
 
-def error(message, status=400):
+def response(status_code=200, body=None):
     return {
-        "statusCode": status,
-        "body": json.dumps({
-            "success": False,
-            "error": message
-        })
+        "statusCode": status_code,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "body": json.dumps(body or {})
     }
