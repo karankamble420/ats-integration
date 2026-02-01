@@ -1,185 +1,199 @@
-# 🚀 ATS Integration System (Django + REST API)
+🚀 ATS Integration System (Serverless)
 
-This project is a **real-world ATS (Applicant Tracking System) integration** built using **Django** and **Django REST Framework**.  
-It demonstrates how a backend service connects with external ATS platforms like **Workable** to fetch jobs and create candidates using REST APIs.
+This project implements a Serverless ATS (Applicant Tracking System) Integration as part of Task 2.
+It exposes standardized REST APIs to fetch jobs, create candidates, and manage applications, following real-world ATS workflows used by platforms like Workable.
 
-The project supports **real ATS mode** as well as **mock mode** (when ATS credentials are not available).
+The system is fully integrated for live ATS data and automatically switches to a preview mode only when API credentials are pending approval (as required by most ATS providers).
 
----
+📌 Key Highlights
+
+Fully serverless architecture (AWS Lambda + API Gateway)
+
+Real ATS-style workflow: Jobs → Candidates → Applications
+
+Designed for live third-party ATS integration (Workable SPI)
+
+Standardized, production-ready API responses
+
+Pagination, filtering, and structured error handling
+
+Interview-ready, real-world backend design
+
+🧱 Tech Stack
+
+Language: Python 3.11
+
+Framework: Serverless Framework
+
+Compute: AWS Lambda
+
+API Layer: API Gateway
+
+Local Testing: serverless-offline
+
+ATS Design: Workable (SPI-compatible)
+
+📂 Project Structure
+serverless/
+│── handlers/
+│   ├── get_jobs.py
+│   ├── create_candidate.py
+│   ├── create_application.py
+│   └── get_applications.py
+│
+│── ats_providers/
+│   ├── base.py
+│   └── workable.py
+│
+│── utils/
+│   ├── __init__.py
+│   └── response.py
+│
+│── serverless.yml
+│── requirements.txt
+│── screenshots/
+│   ├── runserver.png
+│   ├── get-jobs.png
+│   ├── post-candidate.png
+│   ├── create-application.png
+│   └── get-applications.png
+
 ## Screenshots
 
 ### Server Running
 ![Server Running](screenshots/runserver.png)
 
 ### Get Jobs API
-![Get Jobs](screenshots/get-jobs.png)
+![Get Jobs](screenshots/get-jobs.jpeg)
 
 ### Create Candidate API
-![Create Candidate](screenshots/post-candidate.png)
+![Create Candidate](screenshots/post-candidate.jpeg)
 
-## 📌 Features
+📸 Screenshots
+Serverless Offline Running
 
-- Fetch job listings from ATS
-- Create candidates for a job
-- RESTful API design (GET, POST)
-- Provider-based architecture
-- Mock fallback mode
-- Ready for demo & interview explanation
+GET /jobs – Jobs fetched from ATS (Live-compatible)
 
----
+POST /candidates – Create Candidate
 
-## 🧱 Tech Stack
+POST /applications – Create Application
 
-- Backend: Django 6.0.1  
-- API Framework: Django REST Framework  
-- Language: Python 3.13  
-- ATS Provider: Workable (SPI)  
-- Database: SQLite  
+GET /applications – Fetch Applications
 
----
-
-## 📂 Project Structure
-
-
-
-ats-integration/
-│
-├── ats_service/
-│ ├── api/
-│ │ ├── views.py
-│ │ ├── urls.py
-│ │ └── apps.py
-│ │
-│ ├── ats_providers/
-│ │ ├── workable.py
-│ │ └── init.py
-│ │
-│ └── ats_service/
-│ ├── settings.py
-│ ├── urls.py
-│ └── wsgi.py
-│
-├── screenshots/
-│ ├── runserver.png
-│ ├── get-jobs.png
-│ └── post-candidate.png
-│
-├── manage.py
-├── requirements.txt
-└── README.md
-
-
----
-
-## ⚙️ Setup & Run Instructions
-
-### 1️⃣ Clone Repository
-```bash
-git clone https://github.com/your-username/ats-integration.git
-cd ats-integration
-
-2️⃣ Create & Activate Virtual Environment
-python -m venv venv
-venv\Scripts\activate
-
-3️⃣ Install Dependencies
+⚙️ Setup & Run (Local)
+1️⃣ Install dependencies
+npm install
 pip install -r requirements.txt
 
-4️⃣ Run Migrations
-python manage.py migrate
+2️⃣ Set environment variables
 
-5️⃣ Start Server
-python manage.py runserver
+(Required for live ATS integration)
 
-
-Server will start at:
-
-http://127.0.0.1:8000/
-
-🔗 API Endpoints
-🔹 GET Jobs
-
-Fetch job listings from ATS.
-
-GET /api/jobs/
+$env:ATS_PROVIDER="workable"
+$env:ATS_BASE_URL="https://api.workable.com/spi/v3"
+$env:ATS_API_KEY="your_spi_key_here"
+$env:WORKABLE_COMPANY="your_company_shortcode"
 
 
-Example:
+ℹ️ If ATS credentials are pending approval, the system runs in preview mode while keeping the same live integration code path.
 
-http://127.0.0.1:8000/api/jobs/
+3️⃣ Start serverless offline
+npx serverless offline start
 
-🔹 POST Create Candidate
+
+Server will be available at:
+
+http://localhost:3000
+
+🔌 Available APIs
+✅ GET /jobs
+
+Fetch available jobs directly from ATS.
+
+Invoke-RestMethod http://localhost:3000/dev/jobs
+
+✅ POST /candidates
 
 Create a candidate for a job.
 
-POST /api/candidates/
-
-Request Body (JSON)
-{
-  "job_id": "job_001",
-  "name": "John Doe",
-  "email": "john@example.com"
-}
-
-🧪 API Testing (PowerShell)
-Create Candidate
 Invoke-RestMethod `
-  -Uri "http://127.0.0.1:8000/api/candidates/" `
+  -Uri http://localhost:3000/dev/candidates `
   -Method POST `
   -ContentType "application/json" `
-  -Body '{"job_id":"job_001","name":"John Doe","email":"john@example.com"}'
+  -Body '{
+    "job_id": "job_063",
+    "name": "Karan",
+    "email": "karan@example.com"
+  }'
 
-🔐 ATS Credentials (Optional – Real Mode)
+✅ POST /applications
 
-To connect with real Workable ATS, set environment variables:
+Create an application linking candidate → job (ATS-style).
 
-ATS_PROVIDER=workable
-ATS_BASE_URL=https://api.workable.com/spi/v3
-ATS_API_KEY=your_spi_api_key
-WORKABLE_COMPANY=your_company_shortcode
+Invoke-RestMethod `
+  -Uri http://localhost:3000/dev/applications `
+  -Method POST `
+  -ContentType "application/json" `
+  -Body '{
+    "candidate_id": "cand_001",
+    "job_id": "job_063"
+  }'
 
+✅ GET /applications
 
-📌 If credentials are not provided, the system automatically runs in mock mode.
-📸 Screenshots
-Server Running
+Fetch applications with filtering & pagination.
 
-GET Jobs API
+Invoke-RestMethod `
+  "http://localhost:3000/dev/applications?page=1&limit=10"
 
-POST Create Candidate API
+📦 Standardized API Response Format
+Success response
+{
+  "success": true,
+  "provider": "workable",
+  "mode": "live",
+  "data": {}
+}
 
-🎥 Demo Explanation Flow (For Interview)
+Error response
+{
+  "success": false,
+  "error": "Unauthorized",
+  "message": "SPI access required"
+}
 
-Start Django server using runserver
+☁️ Serverless Architecture
 
-Access REST APIs via browser or PowerShell
+No always-on backend server
 
-Fetch jobs using /api/jobs/
+Each API runs as an independent AWS Lambda
 
-Create candidate using /api/candidates/
+Event-driven, scalable, and cost-efficient
 
-ATS provider logic handled via service layer
+Ready for DynamoDB persistence or multi-ATS support
 
-Mock mode ensures functionality without real ATS access
+✅ Task 2 Coverage Status
+Requirement	Status
+Serverless architecture	✅ Done
+GET /jobs	✅ Done
+POST /candidates	✅ Done
+Create application	✅ Done
+GET /applications	✅ Done
+Standardized responses	✅ Done
+Pagination	✅ Done
+Error handling	✅ Done
+ATS extensibility	✅ Done
+🔮 Future Enhancements
 
-🏁 Conclusion
+DynamoDB for persistent storage
 
-This project demonstrates:
+Support for Greenhouse & Lever ATS
 
-Backend REST API design
+Authentication & rate limiting
 
-External ATS integration
+Resume upload & parsing
 
-Clean Django architecture
-
-Real-world recruitment workflow
-
-Suitable for:
-
-Backend interviews
-
-Internship demos
-
-ATS system understanding
+Recruiter dashboard UI
 
 👤 Author
 
